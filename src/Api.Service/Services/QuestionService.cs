@@ -38,6 +38,13 @@ namespace Api.Service.Services
             return await _repository.SelectAsync(id, x => x.AnswerList);
         }
 
+        public async Task<List<AnswerDto>> GetCorrectAnswer(Guid questionId) {
+            QuestionEntity questionEntity = await Get(questionId);
+            List<AnswerEntity> answerEntity = questionEntity.AnswerList.Where(al => al.IsCorrect).ToList();
+            List<AnswerDto> answerDto = _mapper.Map<List<AnswerDto>>(answerEntity);
+
+            return answerDto;
+        }
         public async Task<IEnumerable<QuestionEntity>> GetAll()
         {
             return await _repository.SelectAsync(x => x.AnswerList);
