@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Api.Data.Context;
+using Api.Domain.Dto;
 using Api.Domain.Entities;
 using Api.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -80,20 +81,30 @@ namespace Api.Data.Repository
                 throw ex;
             }
         }
-
-        public async Task<IEnumerable<T>> SelectAsync(params Expression<Func<T, object>>[]? includes)
+        
+        public async Task<IEnumerable<T>> SelectAsync(SelectQuery<T>? options)
         {
             IQueryable<T> query = _dataset;
 
-            if (includes != null && includes.Any())
-            {
-                foreach (var include in includes)
+            if(options != null) {
+                if (options.Includes != null && options.Includes.Any())
                 {
-                    query = query.Include(include);
+                    foreach (var include in options.Includes)
+                    {
+                        query = query.Include(include);
+                    }
+                }
+
+                if (options.Conditions != null && options.Conditions.Any())
+                {
+                    foreach (var condition in options.Conditions)
+                    {
+                        query = query.Where(condition);
+                    }
                 }
             }
 
-             try{
+            try{
                 return await query.ToListAsync();       
             }catch(Exception ex){
                 throw ex;

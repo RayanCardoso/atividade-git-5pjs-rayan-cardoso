@@ -7,6 +7,7 @@ using AutoMapper;
 using Api.Domain.Entities;
 using Api.Domain.Interfaces;
 using Api.Domain.Interfaces.Services;
+using System.Linq.Expressions;
 
 namespace Api.Service.Services
 {
@@ -45,9 +46,32 @@ namespace Api.Service.Services
 
             return answerDto;
         }
+        public async Task<List<QuestionEntity>> GetBySubject(string subject) {
+            IEnumerable<QuestionEntity> arrayQuestionsEntity = await _repository.SelectAsync(new SelectQuery<QuestionEntity>
+            {
+                Includes = new Expression<Func<QuestionEntity, object>>[]
+                {
+                    q => q.AnswerList
+                },
+                Conditions = new Expression<Func<QuestionEntity, bool>>[]
+                {
+                    q => q.SubjectName == subject
+                }
+            });
+
+            return arrayQuestionsEntity.ToList();
+        }
+
         public async Task<IEnumerable<QuestionEntity>> GetAll()
         {
-            return await _repository.SelectAsync(x => x.AnswerList);
+            return await _repository.SelectAsync(new SelectQuery<QuestionEntity>
+            {
+                Includes = new Expression<Func<QuestionEntity, object>>[]
+                {
+                    q => q.AnswerList
+                }
+            });
+            // x => x.AnswerList);
         }
 
         public async Task<QuestionDto> Post(QuestionDto question)

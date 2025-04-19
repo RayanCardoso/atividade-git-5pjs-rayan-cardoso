@@ -103,6 +103,25 @@ namespace Api.Application.Controllers {
             }
         }
 
+        [HttpGet]
+        [Route("BySubject/{subject}")]
+        public async Task<ActionResult> GetBySubject(string subject)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                return Ok(await _service.GetBySubject(subject));
+            }
+            catch (ArgumentException e)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, e.Message);
+            }
+        }
+
         [HttpPut]
 
         public async Task<IActionResult> Put([FromBody] QuestionUpdateDto question)
