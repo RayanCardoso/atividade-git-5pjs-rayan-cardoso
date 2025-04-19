@@ -84,6 +84,25 @@ namespace Api.Application.Controllers {
             }
         }
 
+        [HttpGet]
+        [Route("correctAnswer/{questionId}")]
+        public async Task<ActionResult> GetCorrectAnswer(Guid questionId)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            try
+            {
+                return Ok(await _service.GetCorrectAnswer(questionId));
+            }
+            catch (ArgumentException e)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, e.Message);
+            }
+        }
+
         [HttpPut]
 
         public async Task<IActionResult> Put([FromBody] QuestionUpdateDto question)
