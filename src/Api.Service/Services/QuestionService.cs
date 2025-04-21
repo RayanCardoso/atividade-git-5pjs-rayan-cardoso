@@ -59,7 +59,10 @@ namespace Api.Service.Services
                 }
             });
 
-            return arrayQuestionsEntity.ToList();
+            return arrayQuestionsEntity
+                .OrderBy(q => Guid.NewGuid())
+                .Take(10)
+                .ToList();
         }
 
         public async Task<IEnumerable<QuestionEntity>> GetAll()
